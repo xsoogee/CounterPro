@@ -1,44 +1,74 @@
 package com.example.counterpro
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.counterpro.databinding.ActivityMainBinding
+import android.widget.Toast
+import androidx.core.content.edit
+
+
 
 class MainActivity : AppCompatActivity() {
 
     private var count = 0
-    private fun updateCountText(tvCount: TextView){
-                tvCount.text="Sayı: $count"
+    private val prefsName = "counter_prefs"
+    private val keyCount = "count"
+    private lateinit var binding: ActivityMainBinding
+
+
+
+    private fun updateCountText(){
+                binding.tvCount.text=getString(R.string.count_text,count)
+    }
+    private fun saveCount() {
+        val prefs = getSharedPreferences(prefsName, MODE_PRIVATE)
+        prefs.edit {
+            putInt(keyCount, count)
+        }
+    }
+    private fun updateButtonState() {
+        binding.btnDecrease.isEnabled = count > 0
+        binding.btnReset.isEnabled= count > 0
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val tvCount = findViewById<TextView>(R.id.tvCount)
-        val btnIncrease = findViewById<Button>(R.id.btnIncrease)
-        val btnDecrease = findViewById<Button>(R.id.btnDecrease)
-        val btnReset = findViewById<Button>(R.id.btnReset)
-        btnIncrease.setOnClickListener {
+        val prefs = getSharedPreferences(prefsName, MODE_PRIVATE)
+        count = prefs.getInt(keyCount, 0)
+        updateCountText()
+        updateButtonState()
+
+
+        binding.btnIncrease.setOnClickListener {
             count++
             //tvCount.text = count.toString()
-            updateCountText(tvCount)
+            updateCountText()
+            saveCount()
+            updateButtonState()
 
         }
-        btnDecrease.setOnClickListener {
+        binding.btnDecrease.setOnClickListener {
             if (count>0){
 
                 count--
-                updateCountText(tvCount)
-
+                updateCountText()
+                saveCount()
+                updateButtonState()
             }
 
         }
-        btnReset.setOnClickListener {
+        binding.btnReset.setOnClickListener {
             count =0
             //tvCount.text = count.toString()
-            updateCountText(tvCount)
+            updateCountText()
+            saveCount()
+            updateButtonState()
+            Toast.makeText(this, getString(R.string.reset_message), Toast.LENGTH_SHORT).show()
 
         }
     }
+
+
 }

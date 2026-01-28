@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CounterPro</string>
+    <string name="reset_message">Sıfırlandı</string>
+    <string name="count_text">Sayı: %1$d</string>
 </resources>
